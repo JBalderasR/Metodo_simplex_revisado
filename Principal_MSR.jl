@@ -10,23 +10,11 @@ include("./delete_vartificial.jl")
 
 using LinearAlgebra,DataFrames,Printf
 
-b=[12;4]
-c_a=[0; 0; 0; 0; 1]
-A=[1 1 -1 0 1;5 -2 0 1 0]
-v_artificiales=[5]
-costos=[4;3;0;0]#costos de la funcion objetivo
-
 function MSR(b,c_a,A,v_artificiales,costos)
    @printf("\t Método Simplex Revisado\n")
-   #b=[4;12]
-   #c_a=[0;0;0;0;1;1]
-   #A=[1 2 -1 0  1 0; 5 2 0 -1 0 1]
-   #v_artificiales=[5;6]
-   #costos=[3;10;0;0]
-   no_col= size(A)[2] #(m+h+a)
-   #vector de variables básicas
+   
+   no_col= size(A)[2]
    lista_vbasicas=[]
-   #v_basicas=vcat(v_basicas,0)
    v_basicas = createv_basicas(A)
    A0 = [A b; c_a' 0]
    n= size(v_basicas)[2]
@@ -39,7 +27,7 @@ function MSR(b,c_a,A,v_artificiales,costos)
    solucion=0
    solucion_acotada=1
    solucion2=0
-   #inicio iteraciones
+ 
    R = []
    l_vbasicas=[]
    l_vlibres=[]
@@ -62,9 +50,9 @@ function MSR(b,c_a,A,v_artificiales,costos)
       L0=A[:,v_libres0]
       C_reducidosL=R0[n+1,1:n]'*L0
       costosreducidos=push!(costosreducidos,round.(C_reducidosL,digits=14))
-      solucion=solucion_optima(C_reducidosL)#cambiar nombre por óptima
+      solucion=solucion_optima(C_reducidosL)
       posicion_e=argmin(C_reducidosL')
-      v_libre_e=v_libres0[posicion_e]#Revisión de los signos de los costos red
+      v_libre_e=v_libres0[posicion_e]
       c_reducidoe=C_reducidosL[posicion_e]
       Ae=R0[1:n,1:n]*A[1:n,v_libre_e]
       Ae_1=Ae;push!(Ae_1,c_reducidoe)
@@ -88,9 +76,9 @@ function MSR(b,c_a,A,v_artificiales,costos)
           L0=A0[:,v_libres0]
           C_reducidosL=R0[n+1,1:n+1]'*L0
           costosreducidos=push!(costosreducidos,round.(C_reducidosL,digits=14))
-          solucion=solucion_optima(C_reducidosL)#cambiar nombre por óptima
+          solucion=solucion_optima(C_reducidosL)
           posicion_e=argmin(C_reducidosL')
-          v_libre_e=v_libres0[posicion_e]#Revisión de los signos de los costos red
+          v_libre_e=v_libres0[posicion_e]
           c_reducidoe=C_reducidosL[posicion_e]
           Ae=R0[1:n,1:n]*A[1:n,v_libre_e]
           Ae_1=Ae;push!(Ae_1,c_reducidoe)
@@ -104,7 +92,7 @@ function MSR(b,c_a,A,v_artificiales,costos)
       posicion_vsale0=elegir_vsale(R0)
       vbasica_sale0=v_basicas[posicion_vsale0]
       if posicion_vsale0==0
-         solucion_acotada=0 #si la variable solucion_acotada=0 y cuando es igual a 1 es no acotada
+         solucion_acotada=0 
       else
           solucion_acotada=1
       end
@@ -119,7 +107,6 @@ function MSR(b,c_a,A,v_artificiales,costos)
       R0=R1
       L0=A0[:,v_libres0]
       C_reducidosL=R0[n+1,1:n+1]'*L0
-      #costosreducidos=push!(costosreducidos,round.(C_reducidosL,digits=14))
       solucion=solucion_optima(C_reducidosL)
       if (z[k+1]==0.0) & (length(v_artificiales)==0.0)
          solucion2=0
